@@ -5,6 +5,7 @@
   <artifactId>park</artifactId>
   <packaging>pom</packaging>
   <version>1.0-SNAPSHOT</version>
+
   <modules>
     <module>park-locator</module>
     <module>park-core</module>
@@ -14,6 +15,7 @@
     <module>park-car</module>
     <module>park-model</module>
     <module>park-persist</module>
+    <module>park-MQ</module>
   </modules>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -32,11 +34,7 @@
       <version>${spring.version}</version>
     </dependency>
 
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-webmvc</artifactId>
-      <version>${spring.version}</version>
-    </dependency>
+
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-jdbc</artifactId>
@@ -61,6 +59,17 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-context-support</artifactId>
       <version>${spring.version}</version>
+    </dependency>
+    <!--activeMQ-->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jms</artifactId>
+      <version>${spring.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-core</artifactId>
+      <version>5.7.0</version>
     </dependency>
 
     <dependency>
@@ -91,60 +100,8 @@
       <artifactId>aspectjrt</artifactId>
       <version>1.7.3</version>
     </dependency>
-    <!--mybatis-->
-    <dependency>
-      <groupId>org.mybatis</groupId>
-      <artifactId>mybatis</artifactId>
-      <version>3.2.4</version>
-    </dependency>
 
-    <dependency>
-      <groupId>org.mybatis</groupId>
-      <artifactId>mybatis-spring</artifactId>
-      <version>1.2.2</version>
-    </dependency>
-    <!-- 数据源和jdbc驱动依赖 start-->
-    <dependency>
-      <groupId>commons-pool</groupId>
-      <artifactId>commons-pool</artifactId>
-      <version>1.6</version>
-    </dependency>
-    <dependency>
-      <groupId>commons-dbcp</groupId>
-      <artifactId>commons-dbcp</artifactId>
-      <version>1.4</version>
-    </dependency>
-    <dependency>
-      <groupId>commons-collections</groupId>
-      <artifactId>commons-collections</artifactId>
-      <version>20040616</version>
-    </dependency>
-    <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
-      <version>5.1.30</version>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.ehcache</groupId>
-      <artifactId>ehcache-core</artifactId>
-      <version>2.4.3</version>
-    </dependency>
-    <dependency>
-      <groupId>com.mchange</groupId>
-      <artifactId>c3p0</artifactId>
-      <version>0.9.5</version>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.5</version>
-    </dependency>
 
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>jstl</artifactId>
-      <version>1.2</version>
-    </dependency>
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
@@ -215,7 +172,7 @@
     </dependency>
   </dependencies>
 
-  <build>
+  <!--<build>
     <finalName>park</finalName>
     <plugins>
       <plugin>
@@ -240,7 +197,7 @@
           <uriEncoding>UTF-8</uriEncoding>
         </configuration>
       </plugin>
-      <!-- 编译插件 -->
+      &lt;!&ndash; 编译插件 &ndash;&gt;
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -255,14 +212,14 @@
           </compilerArguments>
         </configuration>
       </plugin>
-      <!-- 项目依赖插件  -->
+      &lt;!&ndash; 项目依赖插件  &ndash;&gt;
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <configuration>
           <outputDirectory>${project.build.directory}/lib</outputDirectory>
-          <excludeTransitive>false</excludeTransitive> <!-- 表示是否不包含间接依赖的包 -->
-          <stripVersion>false</stripVersion> <!-- 去除版本信息 -->
+          <excludeTransitive>false</excludeTransitive> &lt;!&ndash; 表示是否不包含间接依赖的包 &ndash;&gt;
+          <stripVersion>false</stripVersion> &lt;!&ndash; 去除版本信息 &ndash;&gt;
         </configuration>
 
         <executions>
@@ -273,7 +230,7 @@
               <goal>copy-dependencies</goal>
             </goals>
             <configuration>
-              <!-- 拷贝项目依赖包到lib/目录下 -->
+              &lt;!&ndash; 拷贝项目依赖包到lib/目录下 &ndash;&gt;
               <outputDirectory>${project.build.directory}/lib</outputDirectory>
               <excludeTransitive>false</excludeTransitive>
               <stripVersion>false</stripVersion>
@@ -281,7 +238,7 @@
           </execution>
         </executions>
       </plugin>
-      <!-- 项目资源插件 -->
+      &lt;!&ndash; 项目资源插件 &ndash;&gt;
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
@@ -320,24 +277,24 @@
         </executions>
       </plugin>
 
-      <!-- 打包插件 -->
+      &lt;!&ndash; 打包插件 &ndash;&gt;
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
           <archive>
-            <!-- 生成MANIFEST.MF的设置 -->
+            &lt;!&ndash; 生成MANIFEST.MF的设置 &ndash;&gt;
             <manifest>
-              <!-- 为依赖包添加路径, 这些路径会写在MANIFEST文件的Class-Path下 -->
+              &lt;!&ndash; 为依赖包添加路径, 这些路径会写在MANIFEST文件的Class-Path下 &ndash;&gt;
               <addClasspath>true</addClasspath>
               <classpathPrefix>lib/</classpathPrefix>
             </manifest>
           </archive>
-          <!-- <webXml>\Program\SmartDistribution\web\WEB-INF\web.xml</webXml>-->
+          &lt;!&ndash; <webXml>\Program\SmartDistribution\web\WEB-INF\web.xml</webXml>&ndash;&gt;
           <failOnMissingWebXml>false</failOnMissingWebXml>
         </configuration>
       </plugin>
 
     </plugins>
-  </build>
+  </build>-->
 </project>

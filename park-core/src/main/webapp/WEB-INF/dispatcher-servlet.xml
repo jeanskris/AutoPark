@@ -17,13 +17,14 @@
     <context:annotation-config />
     <!-- 开启注解 -->
     <mvc:annotation-driven/>
+    <mvc:resources mapping="/assets/**" location="/WEB-INF/pages/assets/"/>
+    <!--<mvc:resources mapping="/**" location="WEB-INF/pages/"/>-->
 
-    <!--  <mvc:resources mapping="/assets/**" coordinate="/WEB-INF/pages/assets/"/>-->
     <!--ViewResolver 视图解析器-->
     <!--用于支持Servlet、JSP视图解析-->
     <bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
-        <property name="prefix" value="/WEB-INF/"/>
+        <property name="prefix" value="/WEB-INF/pages/"/>
         <property name="suffix" value=".jsp"/>
         <property name="contentType" value="text/html;charset=UTF-8"/>
     </bean>

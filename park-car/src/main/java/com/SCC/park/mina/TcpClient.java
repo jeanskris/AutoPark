@@ -9,6 +9,8 @@ import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -18,8 +20,18 @@ import java.nio.charset.Charset;
  * Created by ZJDX on 2016/5/24.
  */
 public class TcpClient extends IoHandlerAdapter {
+    private static Logger logger = LoggerFactory.getLogger(TcpClient.class);
     private IoConnector connector;
     private static IoSession session;
+
+    public SocketAddress getAddress() {
+        return address;
+    }
+
+    public void setAddress(SocketAddress address) {
+        this.address = address;
+    }
+
     private SocketAddress address;
 
     public boolean send(Object message) {
@@ -32,15 +44,17 @@ public class TcpClient extends IoHandlerAdapter {
             connector.getFilterChain().addLast("codec",
                     new ProtocolCodecFilter(new TextLineCodecFactory(Charset.forName("UTF-8"))));
             connector.setHandler(this);
-            address=new InetSocketAddress(Constant.TCP_SERVER_IP, Constant.TCP_SERVER_PORT);
+            address=new InetSocketAddress(Constant.TCP_REMOTE_SERVER_IP, Constant.TCP_REMOTE_SERVER_PORT);
             ConnectFuture future1 = connector.connect(address);
             future1.awaitUninterruptibly();
             if (!future1.isConnected()) {
+                logger.debug("!future1.isConnected");
                 System.out.println("!future1.isConnected");
                 return false;
             }
             session = future1.getSession();
             session.write(message);
+            logger.debug("TCP write");
             System.out.println("TCP write");
             session.close();
             session.getCloseFuture().awaitUninterruptibly();

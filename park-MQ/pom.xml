@@ -9,8 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>park-persist</artifactId>
-    <packaging>jar</packaging>
-    <name>${project.artifactId}</name>
+    <artifactId>park-MQ</artifactId>
+
 
 </project>

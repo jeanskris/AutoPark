@@ -13,6 +13,33 @@
     <packaging>war</packaging>
     <dependencies>
         <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <dependency>
             <groupId>com.SCC.park</groupId>
             <artifactId>park-model</artifactId>
             <version>1.0-SNAPSHOT</version>
@@ -20,6 +47,11 @@
         <dependency>
             <groupId>com.SCC.park</groupId>
             <artifactId>park-locator</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.SCC.park</groupId>
+            <artifactId>park-car</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
