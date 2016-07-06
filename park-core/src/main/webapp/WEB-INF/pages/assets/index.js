@@ -10,12 +10,30 @@ function stop(){
 function turnLeft(){
     ajaxReq("turnLeft");
 }
-function clear(){
+function clearAll(){
     ajaxReq("clear");
 }
 function fellow_magnetic(){
     ajaxReq("fellowMagnetic");
 }
+function startByPlatform(){
+    ajaxReq("startByPlatform");
+}
+function previous_page(){
+    $.ajax("previousPage", {
+        type: "GET",
+        dataType:"html",
+        success: function (data) {
+            console.log(data);
+            window.location.href =data;
+        },
+        error: function () {
+            console.log("error2");
+        },
+
+    });
+}
+
 function ajaxReq(action){
     $.ajax(action, {
         type: "GET",
@@ -30,7 +48,106 @@ function ajaxReq(action){
     });
 }
 
-/*绘制地图*/
+function selectMap(e)
+{
+    $.ajax("getMap", {
+        type: "GET",
+        dataType:"json",
+        data: {mapId:e},
+        success: function (data) {
+            console.log(data);
+            var map;
+            map = eval(data);//parse json to object  ==val 解析json==
+            var json = JSON.stringify(data);
+            console.log("map.points.length:"+map.points.length);
+            console.log(json);
+            var point;
+            for ( var i=0;i<map.points.length;i=i+2){
+                //console.log("point.x:"+map.points[i].x+"; point.y:"+map.points[i].y);
+                drawPixel(map.points[i].x , map.points[i].y , 0, 0,0, 255);
+                ctx.putImageData(canvasData, map.points[i].x , map.points[i].y );
+            }
+
+        },
+        error: function () {
+            console.log("error2");
+        },
+
+    });
+
+}
+// mouse event
+//
+function doMouseDown(event) {
+    var x = event.pageX;
+    var y = event.pageY;
+    var canvas = event.target;
+    var loc = getPointOnCanvas(canvas, x, y);
+    drawPixel(loc.x,loc.y, 255, 0,0, 255);
+    ctx.putImageData(canvasData,loc.x,loc.y);
+    $.ajax("mouseClickPoint", {
+        type: "POST",
+        contentType : "application/json;charset=UTF-8",
+        dataType:"json",
+        data:JSON.stringify(loc),
+        success: function () {
+            console.log("suc");
+        },
+        error: function () {
+            console.log("error:"+JSON.stringify(loc));
+        },
+
+    });
+
+}
+function getPointOnCanvas(canvas, x, y) {
+    return{ x: x- canvas.offsetLeft+0.01,
+        y: y - canvas.offsetTop+0.01
+    };
+}
+//=======================draw map==============================
+//canvas1
+var c ;
+var cxt ;
+//canvas2
+var canvas  ;
+var canvasWidth ;
+var canvasHeight ;
+var ctx ;
+var canvasData ;
+
+$(document).ready(function () {
+    //canvas1
+    c=document.getElementById("glcanvas");
+    cxt=c.getContext("2d");
+    //canvas2
+    canvas = document.getElementById("glcanvas2");
+    canvasWidth = canvas.width;
+    canvasHeight = canvas.height;
+    ctx=canvas.getContext("2d");
+    canvasData = ctx.createImageData(2,2);
+    //canvasData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
+    console.log("load");
+    canvas.addEventListener("mousedown", doMouseDown, false);
+
+});
+// That's how you define the value of a pixel //
+function drawPixel (x, y, r, g, b, a) {
+    //var index = (x + y * canvasWidth) * 4;//网上的  这样会有重叠现象
+    var index = 0;
+    canvasData.data[index + 0] = r;
+    canvasData.data[index + 1] = g;
+    canvasData.data[index + 2] = b;
+    canvasData.data[index + 3] = a;
+}
+
+// That's how you update the canvas, so that your //
+// modification are taken in consideration //
+function updateCanvas() {
+    ctx.putImageData(canvasData, 0, 0);
+}
+
+/*绘制测试地图*/
 var Ax=10;
 var AY=20;
 var lineStart=20;
@@ -61,8 +178,7 @@ var dot9x=dot1x;
 var dot9y=dot1y;
 
 function map(){
-    var c=document.getElementById("glcanvas");
-    var cxt=c.getContext("2d");
+
 
     cxt.font = "12px serif";
     cxt.fillText("A", 10, 10);
@@ -110,8 +226,7 @@ function map(){
 }
 
 function addText(tx,x,y){
-    var c=document.getElementById("glcanvas");
-    var cxt=c.getContext("2d");
+
     cxt.font = "12px serif";
     cxt.fillText(tx, x, y);
 }
@@ -143,8 +258,7 @@ var ball=null;
  ball.draw();
  } */
 function updateBall( x, y){
-    var c=document.getElementById("glcanvas");
-    var cxt=c.getContext("2d");
+
     console.log("oldballx:"+oldballx+"  "+"oldbally");
     cxt.clearRect(oldballx,oldbally, 10, 10);
     ball = {
@@ -168,12 +282,12 @@ function updateBall( x, y){
 }
 
 var intervalUpdate;
-updateInterval();//页面启动就开始轮询更新marker
+updateInterval();//页面启动就开始轮询更新位置
 function updateInterval(){
-    intervalUpdate=setInterval(function() {//后面每次更新marker gps数据
+    intervalUpdate=setInterval(function() {//后面每次更新数据
             update();
         },
-        1000);
+        3000);
 }
 var oldSeq=-1;
 function update(){
@@ -197,7 +311,6 @@ function update(){
                 if(msg.message==9){updateBall(dot6x,dot6y);addText('9',dot6x-15,dot6y+10);}
                 if(msg.message==10){updateBall(dot7x,dot7y);addText('10',dot7x-10,dot7y-10);}
                 if(msg.message==11){updateBall(dot7x,dot7y);addText('11',dot7x+10,dot7y-10);}
-
                 if(msg.message==12){updateBall(dot9x,dot9y);addText('12',dot9x-15,dot9y+10);}
                 if(msg.message==13){updateBall(dot9x,dot9y);addText('13',dot9x+10,dot9y+10);}
             }
@@ -211,3 +324,4 @@ function update(){
 
     });
 }
+

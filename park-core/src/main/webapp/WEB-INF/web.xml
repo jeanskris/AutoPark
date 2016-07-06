@@ -15,12 +15,12 @@
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
-    <!--    <listener>
+       <!-- <listener>
             <listener-class>
                 org.springframework.web.util.Log4jWebConfigurer
             </listener-class>
-        </listener>-->
-
+        </listener>
+-->
 
     <!-- 如上配置是Spring集成Web环境的通用配置；
     一般用于加载除Web层的Bean（如DAO、Service等），以便于与其他任何Web框架集成。
@@ -52,4 +52,5 @@
     <welcome-file-list>
         <welcome-file>/WEB-INF/pages/index.jsp</welcome-file>
     </welcome-file-list>
+
 </web-app>
