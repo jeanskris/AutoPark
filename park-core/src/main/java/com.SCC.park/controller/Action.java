@@ -3,10 +3,7 @@ package com.SCC.park.controller;
 import com.SCC.park.CarService;
 import com.SCC.park.LocateService;
 import com.SCC.park.mina.TCPServerHandler;
-import com.SCC.park.model.HttpSelfdefinedRequest;
-import com.SCC.park.model.Map;
-import com.SCC.park.model.ResponseMessage;
-import com.SCC.park.model.Trip;
+import com.SCC.park.model.*;
 import com.SCC.park.sensor.PerceptService;
 import com.SCC.park.utils.Constant;
 import com.SCC.park.utils.ServerConfig;
@@ -122,18 +119,33 @@ public class Action {
 
         return map;
     }
+    @RequestMapping(value = "/getCurrentPosition", method = RequestMethod.GET)
+    public Coordinate mouseClickPoint() {
+        Coordinate coordinate=null;
+        try{
+            ObjectMapper mapper = new ObjectMapper();
+            JSONObject jsonObject= HttpSelfdefinedRequest.sendGet(ServerConfig.SMARTCAR_SERVER+"getCurrentPosition","");
+            coordinate = mapper.readValue(jsonObject.toString(), Coordinate.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return coordinate;
+    }
 //获取前台设置的起始点和终点，将路径发送给车服务器生成路径并解析成指令
     @RequestMapping(value = "/createTrip", method = RequestMethod.POST)
-    public void mouseClickPoint(@RequestBody JSONObject tr) {
+    public Path mouseClickPoint(@RequestBody JSONObject tr) {
+        Path path=null;
         try {
 
             ObjectMapper mapper = new ObjectMapper();
             Trip trip = mapper.readValue(tr.toString(), Trip.class);
-            System.out.println("path:" + trip.getStartPoint().toString() + "," + trip.getEndPoint().toString()+" mapID:"+trip.getMapID());
+            System.out.println("path:" + trip.getStartPoint().toString() + "," + trip.getEndPoint().toString()+" mapID:"+trip.getMapID()+"carId:"+trip.getCarId());
             JSONObject jsonObject= HttpSelfdefinedRequest.sendPost(ServerConfig.SMARTCAR_SERVER+"startAuto",tr);
-
+            path= mapper.readValue(jsonObject.toString(), Path.class);
+            System.out.println(jsonObject.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return path;
     }
 }
