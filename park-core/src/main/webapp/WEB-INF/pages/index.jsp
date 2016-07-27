@@ -28,6 +28,7 @@
 <button id="previous" onclick="previous_page()">previous page</button>
 
 <div>
+    <p>select Map:</p>
     <form>
         <select name="map" onchange="selectMap(this.options[this.options.selectedIndex].value)">
             <option value="1">1</option>
