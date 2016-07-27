@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class Trip {
     private int MapID;
+    private int carId;
     private Coordinate startPoint;
     private Coordinate endPoint;
     public int getMapID() {
@@ -33,8 +34,15 @@ public class Trip {
         this.startPoint = startPoint;
     }
 
+    public int getCarId() {
+        return carId;
+    }
+
+    public void setCarId(int carId) {
+        this.carId = carId;
+    }
     public String toString(){
-        return  "mapID:"+this.getMapID()+"startPoint:"+startPoint.getX()+" "+startPoint.getY()+" endPoint:"+endPoint.getX()+" "+endPoint.getY();
+        return  "carId:"+this.getCarId()+"mapID:"+this.getMapID()+"startPoint:"+startPoint.getX()+" "+startPoint.getY()+" endPoint:"+endPoint.getX()+" "+endPoint.getY();
 
     }
 }
