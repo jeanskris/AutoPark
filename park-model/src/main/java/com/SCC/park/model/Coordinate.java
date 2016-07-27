@@ -30,6 +30,9 @@ public class Coordinate {
         this.y = y;
     }
 
+    public String toString(){
+        return  "x:"+this.getX()+"  y:"+this.getY();
 
+    }
 
 }

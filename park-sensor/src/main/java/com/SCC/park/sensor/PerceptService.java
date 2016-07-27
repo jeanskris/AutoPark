@@ -1,6 +1,7 @@
 package com.SCC.park.sensor;
 
 import com.SCC.park.model.Coordinate;
+import com.SCC.park.model.Map;
 import com.SCC.park.model.PointInfo;
 import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;

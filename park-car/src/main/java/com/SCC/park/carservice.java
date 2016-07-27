@@ -3,7 +3,10 @@ package com.SCC.park;
 import com.SCC.park.mina.SessionMap;
 import com.SCC.park.mina.TcpClient;
 import com.SCC.park.utils.Constant;
+import com.SCC.park.utils.Utils;
+import com.SCC.park.model.HttpSelfdefinedRequest;
 import org.apache.mina.core.buffer.IoBuffer;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -34,11 +37,11 @@ public class CarService {
     }
     public void sendCommand(byte[] message){
         byte[] bytes = message;
-        bytes= com.SCC.park.utils.Utils.checkData(bytes);
+        bytes= Utils.checkData(bytes);
         SessionMap sessionMap = SessionMap.newInstance();
         sessionMap.send(Constant.TCP_REMOTE_SERVER_IP, IoBuffer.wrap(bytes));
-        System.out.println("bytes:"+IoBuffer.wrap(bytes));
-        logger.debug("bytes:"+IoBuffer.wrap(bytes));
+        System.out.println("bytes sendCommand:"+IoBuffer.wrap(bytes));
+        logger.debug("bytes sendCommand:"+IoBuffer.wrap(bytes));
     }
     /**
      * replaceByte
@@ -52,5 +55,10 @@ public class CarService {
         byte[] after=data;
         after[index]=b;
         return after;
+    }
+    public void sendCommandToRemote(String action){
+        logger.debug("sendCommandToRemote");
+        HttpSelfdefinedRequest hr=new HttpSelfdefinedRequest();
+        JSONObject result=hr.sendGet("http://localhost:8081/"+action,"");
     }
 }

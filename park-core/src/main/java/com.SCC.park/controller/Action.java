@@ -3,12 +3,15 @@ package com.SCC.park.controller;
 import com.SCC.park.CarService;
 import com.SCC.park.LocateService;
 import com.SCC.park.mina.TCPServerHandler;
-import com.SCC.park.model.Coordinate;
-import com.SCC.park.model.HttpRequest;
+import com.SCC.park.model.HttpSelfdefinedRequest;
+import com.SCC.park.model.Map;
 import com.SCC.park.model.ResponseMessage;
-import com.SCC.park.sensor.Map;
+import com.SCC.park.model.Trip;
 import com.SCC.park.sensor.PerceptService;
 import com.SCC.park.utils.Constant;
+import com.SCC.park.utils.ServerConfig;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,8 +93,8 @@ public class Action {
     @RequestMapping(value = "/startByPlatform", method = RequestMethod.GET)
     public void startByPlatform(){
         logger.debug("startByPlatform");
-        HttpRequest hr=new HttpRequest();
-        String result=hr.sendGet("http://localhost:8081/startByPlatform","");
+        HttpSelfdefinedRequest hr=new HttpSelfdefinedRequest();
+        String result="";
         System.out.println(result);
     }
 
@@ -99,20 +102,38 @@ public class Action {
     @RequestMapping(value = "/getDataFromPlatform", method = RequestMethod.GET)
     public String getDataFromPlatform(){
         logger.debug("getDataFromPlatform");
-        HttpRequest hr=new HttpRequest();
-        String result=hr.sendGet("http://localhost:8081/getData","");
+        HttpSelfdefinedRequest hr=new HttpSelfdefinedRequest();
+        String result="";
         System.out.println(result);
         return result;
     }
     @RequestMapping(value = "/getMap", method = RequestMethod.GET)
     public Map getMap(@RequestParam(value="mapId", required=false) Integer id) {
         System.out.println("mapId:" + id);
-        Map map=perceptService.getMapByOpencv();
+        HttpSelfdefinedRequest hr=new HttpSelfdefinedRequest();
+        Map map=new Map();
+        try {
+            JSONObject result=hr.sendGet(ServerConfig.ENVIRONMENT_SERVER+"getMap?mapId="+id,"");
+            ObjectMapper mapper=new ObjectMapper();
+            map= mapper.readValue(result.toString(),Map.class);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
         return map;
     }
+//获取前台设置的起始点和终点，将路径发送给车服务器生成路径并解析成指令
+    @RequestMapping(value = "/createTrip", method = RequestMethod.POST)
+    public void mouseClickPoint(@RequestBody JSONObject tr) {
+        try {
 
-    @RequestMapping(value = "/mouseClickPoint", method = RequestMethod.POST)
-    public void mouseClickPoint(@RequestBody Coordinate coordinate) {
-        System.out.println("coordinate:" + coordinate.getX());
+            ObjectMapper mapper = new ObjectMapper();
+            Trip trip = mapper.readValue(tr.toString(), Trip.class);
+            System.out.println("path:" + trip.getStartPoint().toString() + "," + trip.getEndPoint().toString()+" mapID:"+trip.getMapID());
+            JSONObject jsonObject= HttpSelfdefinedRequest.sendPost(ServerConfig.SMARTCAR_SERVER+"startAuto",tr);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

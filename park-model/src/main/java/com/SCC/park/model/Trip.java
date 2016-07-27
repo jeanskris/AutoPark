@@ -1,13 +1,22 @@
 package com.SCC.park.model;
 
-/**
- * Created by ZJDX on 2016/6/20.
- */
+import org.springframework.stereotype.Repository;
 
-public class Path {
+/**
+ * Created by ZJDX on 2016/7/25.
+ */
+@Repository
+public class Trip {
+    private int MapID;
     private Coordinate startPoint;
     private Coordinate endPoint;
+    public int getMapID() {
+        return MapID;
+    }
 
+    public void setMapID(int mapID) {
+        MapID = mapID;
+    }
     public Coordinate getEndPoint() {
         return endPoint;
     }
@@ -25,12 +34,7 @@ public class Path {
     }
 
     public String toString(){
-        return  "startPoint:"+startPoint.getX()+" "+startPoint.getY()+" endPoint:"+endPoint.getX()+" "+endPoint.getY();
+        return  "mapID:"+this.getMapID()+"startPoint:"+startPoint.getX()+" "+startPoint.getY()+" endPoint:"+endPoint.getX()+" "+endPoint.getY();
 
     }
-
-
-
-
-
 }

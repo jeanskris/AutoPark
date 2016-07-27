@@ -1,14 +1,17 @@
 package com.SCC.park.model;
 
-import javax.net.ssl.HttpsURLConnection;
+import org.json.JSONObject;
+import org.springframework.stereotype.Component;
+
+/*import javax.net.ssl.HttpsURLConnection;*/
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
-public class HttpRequest {
+@Component
+public class HttpSelfdefinedRequest {
     /**
      * 向指定URL发送GET方法的请求
      *
@@ -18,7 +21,8 @@ public class HttpRequest {
      *            请求参数，请求参数应该是 name1=value1&name2=value2 的形式。
      * @return URL 所代表远程资源的响应结果
      */
-    public static String sendGet(String uurl, Object obj) {
+    public static JSONObject sendGet(String uurl, Object obj) {
+        JSONObject jsonObject=null;
         try {
             // 创建url
             URL url = new URL(uurl);
@@ -64,12 +68,12 @@ public class HttpRequest {
 
             //print result
             System.out.println(response.toString());
-
-            return response.toString();
+            jsonObject=new JSONObject(response.toString());
+            return jsonObject;
 
         }catch(Exception e) {
             e.printStackTrace();
-            return "error";
+            return jsonObject;
         }
     }
 
@@ -82,20 +86,23 @@ public class HttpRequest {
      *            请求参数，请求参数应该是 name1=value1&name2=value2 的形式。
      * @return 所代表远程资源的响应结果
      */
-    public static String sendPost(String url, Object obj) {
+    public static JSONObject sendPost(String url, Object obj) {
+        JSONObject jsonObject=null;
         PrintWriter out = null;
         BufferedReader in = null;
         String result = "";
         try {
-            URL realUrl = new URL(url);
+//            URL realUrl = new URL(null,url,new sun.net.www.protocol.https.Handler());
             // 打开和URL之间的连接
-            HttpsURLConnection conn = (HttpsURLConnection) realUrl.openConnection();
+            URL realUrl = new URL(url);
+            HttpURLConnection conn = (HttpURLConnection) realUrl.openConnection();
 
             // 设置通用的请求属性
             //add reuqest header
             conn.setRequestMethod("POST");
-            conn.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-
+            //conn.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+            conn.setRequestProperty("Charset", "UTF-8");
+            conn.setRequestProperty("Content-Type", "application/json");
             // 发送POST请求必须设置如下两行
             conn.setDoOutput(true);
             conn.setDoInput(true);
@@ -112,6 +119,7 @@ public class HttpRequest {
             while ((line = in.readLine()) != null) {
                 result += line;
             }
+            jsonObject=new JSONObject(result);
         } catch (Exception e) {
             System.out.println("发送 POST 请求出现异常！"+e);
             e.printStackTrace();
@@ -130,6 +138,6 @@ public class HttpRequest {
                 ex.printStackTrace();
             }
         }
-        return result;
+        return  jsonObject;
     }
 }
