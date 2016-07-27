@@ -77,15 +77,23 @@ function selectMap(e)
 
 }
 function startAuto(){
-    var trip=JSON.stringify({"startPoint":startGPS,"endPoint":endGPS,"mapID":mapID});
+    var trip=JSON.stringify({"startPoint":startGPS,"endPoint":endGPS,"mapID":mapID,"carId":1});
 
     $.ajax("createTrip", {
         type: "POST",
         contentType : "application/json;charset=UTF-8",
         dataType:"json",
         data:JSON.stringify(trip),
-        success: function () {
+        success: function (data) {
             console.log("suc");
+            var path = eval(data);//parse json to object  ==val 解析json==
+            console.log(JSON.stringify(path));
+            // ctx.putImageData(canvasData, coordinate.x, coordinate.y);
+            var list=path.points;
+            for (var i in list) {
+                var coordinate=list[i];
+                putDateCanvas(canvasData,coordinate.x,coordinate.y,0,255,0,255);
+            }
         },
         error: function () {
             console.log("error:"+trip);
@@ -103,6 +111,7 @@ function doMouseDown(event) {
     var y = event.pageY;
     var canvas = event.target;
     var loc = getPointOnCanvas(canvas, x, y);
+
     putDateCanvas(canvasData,loc.x,loc.y,0,255,0,255);
     if(clickTime%2==0){
         document.getElementById("startPlace").innerHTML = "x:"+loc.x+" y:"+loc.y;
@@ -116,8 +125,8 @@ function doMouseDown(event) {
 
 }
 function getPointOnCanvas(canvas, x, y) {
-    return{ x: x- canvas.offsetLeft+0.01,
-        y: y - canvas.offsetTop+0.01
+    return{ x: x- canvas.offsetLeft,
+        y: y - canvas.offsetTop
     };
 }
 
