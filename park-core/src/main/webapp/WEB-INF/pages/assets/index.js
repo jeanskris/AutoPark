@@ -67,7 +67,7 @@ function selectMap(e)
                 //console.log("point.x:"+map.points[i].x+"; point.y:"+map.points[i].y);
                 putDateCanvas(canvasData,map.points[i].x,map.points[i].y, 0, 0,0, 255);
             }
-            updateInterval();//页面启动就开始轮询更新位置
+
         },
         error: function () {
             console.log("error2");
@@ -94,6 +94,8 @@ function startAuto(){
                 var coordinate=list[i];
                 putDateCanvas(canvasData,coordinate.x,coordinate.y,0,255,0,255);
             }
+            updateInterval();//加载完地图后开始轮询更新位置
+
         },
         error: function () {
             console.log("error:"+trip);
