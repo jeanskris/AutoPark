@@ -82,9 +82,9 @@ public class Action {
     }
     @RequestMapping(value = "/previousPage", method = RequestMethod.GET)
     public String previousPage(){
-        //return "http://10.214.143.78:8081/index.html";
+        return "http://10.214.143.78:8081/index.html";
 
-        return "http://114.215.144.107:8080/infoplatform/";
+        //return "http://114.215.144.107:8080/infoplatform/";
     }
 
     @RequestMapping(value = "/startByPlatform", method = RequestMethod.GET)
@@ -126,9 +126,11 @@ public class Action {
             ObjectMapper mapper = new ObjectMapper();
             JSONObject jsonObject= HttpSelfdefinedRequest.sendGet(ServerConfig.SMARTCAR_SERVER+"getCurrentPosition","");
             coordinate = mapper.readValue(jsonObject.toString(), Coordinate.class);
+            System.out.println("getCurrentPosition: coordinate " +jsonObject.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return coordinate;
     }
 //获取前台设置的起始点和终点，将路径发送给车服务器生成路径并解析成指令
@@ -139,10 +141,10 @@ public class Action {
 
             ObjectMapper mapper = new ObjectMapper();
             Trip trip = mapper.readValue(tr.toString(), Trip.class);
-            System.out.println("path:" + trip.getStartPoint().toString() + "," + trip.getEndPoint().toString()+" mapID:"+trip.getMapID()+"carId:"+trip.getCarId());
+            System.out.println("trip:" + trip.getStartPoint().toString() + "," + trip.getEndPoint().toString()+" mapID:"+trip.getMapID()+"carId:"+trip.getCarId());
             JSONObject jsonObject= HttpSelfdefinedRequest.sendPost(ServerConfig.SMARTCAR_SERVER+"startAuto",tr);
+            System.out.println("path:" +jsonObject.toString());
             path= mapper.readValue(jsonObject.toString(), Path.class);
-            System.out.println(jsonObject.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
